@@ -17,6 +17,11 @@ def test_add_order_api_success(client):
     assert response.status_code == 201
     assert response.json['order_id'] == "API001"
 
+def test_add_order_api_incomplete_json(client):
+    response = client.post('/api/orders', json={"order_id": "BAD001"})
+    assert response.status_code == 400
+    assert "error" in response.json
+
 def test_get_order_api_success(client):
     client.post('/api/orders', json={
         "order_id": "GET001", "item_name": "Test Item", "quantity": 1, "customer_id": "C1"
