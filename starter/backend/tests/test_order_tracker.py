@@ -128,6 +128,13 @@ def test_update_order_status_raises_error_if_not_found(order_tracker):
     with pytest.raises(ValueError, match="Order with ID 'ORD001' not found."):
         order_tracker.update_order_status("ORD001", "shipped")
 
+def test_update_order_status_raises_error_if_empty_id_or_status(order_tracker):
+    """Tests that updating with an empty order ID or empty status raises a ValueError."""
+    with pytest.raises(ValueError, match="Invalid order ID or new status."):
+        order_tracker.update_order_status("", "shipped")
+    with pytest.raises(ValueError, match="Invalid order ID or new status."):
+        order_tracker.update_order_status("ORD001", "")
+
 def test_update_order_status_raises_error_if_invalid_status(order_tracker, mock_storage):
     """Tests that updating an order status raises a ValueError if the status is invalid."""
     mock_storage.get_order.return_value = {
