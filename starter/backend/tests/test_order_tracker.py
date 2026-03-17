@@ -69,6 +69,11 @@ def test_cannot_add_order_with_missing_values(order_tracker):
     with pytest.raises(ValueError, match="Missing order values."):
         order_tracker.add_order("ORD001", "Laptop", 1, "", "pending")
 
+def test_cannot_add_order_with_zero_quantity(order_tracker):
+    """Tests that quantity=0 is rejected even when all other fields are valid."""
+    with pytest.raises(ValueError):
+        order_tracker.add_order("ORD001", "Laptop", 0, "CUST001")
+
 def test_cannot_add_order_with_invalid_values(order_tracker):
     """Tests that adding an order with invalid values raises a ValueError."""
     with pytest.raises(ValueError, match="Invalid quantity."):
