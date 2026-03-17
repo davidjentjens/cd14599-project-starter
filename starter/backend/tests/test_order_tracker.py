@@ -34,8 +34,13 @@ def test_add_order_successfully(order_tracker, mock_storage):
     """Tests adding a new order with default 'pending' status."""
     order_tracker.add_order("ORD001", "Laptop", 1, "CUST001")
     
-    # We expect save_order to be called once
-    mock_storage.save_order.assert_called_once()
+    mock_storage.save_order.assert_called_once_with("ORD001", {
+        "order_id": "ORD001",
+        "item_name": "Laptop",
+        "quantity": 1,
+        "customer_id": "CUST001",
+        "status": "pending"
+    })
 
 def test_add_order_raises_error_if_exists(order_tracker, mock_storage):
     """Tests that adding an order with a duplicate ID raises a ValueError."""
@@ -134,7 +139,7 @@ def test_update_order_status_raises_error_if_invalid_status(order_tracker, mock_
 # List all orders tests
 
 def test_list_all_orders_successfully(order_tracker, mock_storage):
-    """Tests that listing all orders returns the correct orders."""
+    """Tests that listing all orders returns a list of order dicts."""
     mock_storage.get_all_orders.return_value = {
         "ORD001": {
             "order_id": "ORD001",
@@ -152,32 +157,20 @@ def test_list_all_orders_successfully(order_tracker, mock_storage):
         }
     }
     orders = order_tracker.list_all_orders()
-    assert orders == {
-        "ORD001": {
-            "order_id": "ORD001",
-            "item_name": "Laptop",
-            "quantity": 1,
-            "customer_id": "CUST001",
-            "status": "pending"
-        },
-        "ORD002": {
-            "order_id": "ORD002",
-            "item_name": "Phone",
-            "quantity": 2,
-            "customer_id": "CUST002",
-            "status": "pending"
-        }
-    }
+    assert isinstance(orders, list)
+    assert len(orders) == 2
+    assert {"order_id": "ORD001", "item_name": "Laptop", "quantity": 1, "customer_id": "CUST001", "status": "pending"} in orders
+    assert {"order_id": "ORD002", "item_name": "Phone", "quantity": 2, "customer_id": "CUST002", "status": "pending"} in orders
 
-def test_list_all_orders_returns_empty_dict_if_no_orders(order_tracker):
-    """Tests that listing all orders returns an empty dict if there are no orders."""
+def test_list_all_orders_returns_empty_list_if_no_orders(order_tracker):
+    """Tests that listing all orders returns an empty list if there are no orders."""
     orders = order_tracker.list_all_orders()
-    assert orders == {}
+    assert orders == []
 
 # List orders by status tests
 
 def test_list_orders_by_status_successfully(order_tracker, mock_storage):
-    """Tests that listing orders by status returns the correct orders."""
+    """Tests that listing orders by status returns a list of matching orders."""
     mock_storage.get_all_orders.return_value = {
         "ORD001": {
             "order_id": "ORD001",
@@ -188,22 +181,22 @@ def test_list_orders_by_status_successfully(order_tracker, mock_storage):
         }
     }
     orders = order_tracker.list_orders_by_status("shipped")
-    assert orders == {
-        "ORD001": {
-            "order_id": "ORD001",
-            "item_name": "Laptop",
-            "quantity": 1,
-            "customer_id": "CUST001",
-            "status": "shipped"
-        }
+    assert isinstance(orders, list)
+    assert len(orders) == 1
+    assert orders[0] == {
+        "order_id": "ORD001",
+        "item_name": "Laptop",
+        "quantity": 1,
+        "customer_id": "CUST001",
+        "status": "shipped"
     }
 
-def test_list_orders_by_status_returns_empty_dict_if_no_orders(order_tracker, mock_storage):
-    """Tests that listing orders by status returns an empty dict if there are no orders."""
+def test_list_orders_by_status_returns_empty_list_if_no_orders(order_tracker, mock_storage):
+    """Tests that listing orders by status returns an empty list if there are no orders."""
     orders = order_tracker.list_orders_by_status("shipped")
-    assert orders == {}
+    assert orders == []
 
-def test_list_orders_by_status_returns_empty_dict_if_no_orders_of_status(order_tracker, mock_storage):
+def test_list_orders_by_status_returns_empty_list_if_no_orders_of_status(order_tracker, mock_storage):
     """Tests that listing orders by status returns an empty list if there are no orders of the given status."""
     mock_storage.get_all_orders.return_value = {
         "ORD001": {
@@ -215,7 +208,7 @@ def test_list_orders_by_status_returns_empty_dict_if_no_orders_of_status(order_t
         }
     }
     orders = order_tracker.list_orders_by_status("shipped")
-    assert orders == {}
+    assert orders == []
 
 def test_list_orders_by_status_raises_error_if_invalid_status(order_tracker):
     """Tests that listing orders by status raises a ValueError if the status is invalid."""

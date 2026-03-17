@@ -55,7 +55,7 @@ class OrderTracker:
         self.storage.save_order(order_id, order)
 
     def list_all_orders(self):
-        return self.storage.get_all_orders()
+        return list(self.storage.get_all_orders().values())
 
     def list_orders_by_status(self, status: str):
         if not status:
@@ -65,4 +65,4 @@ class OrderTracker:
             raise ValueError(f"Invalid status: {status}. Valid statuses are: {VALID_STATES}")
 
         orders = self.storage.get_all_orders()
-        return {k: v for k, v in orders.items() if v["status"] == status}
+        return [v for v in orders.values() if v["status"] == status]

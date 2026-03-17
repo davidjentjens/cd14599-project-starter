@@ -57,9 +57,7 @@ def list_orders_api():
     else:
         orders = order_tracker.list_all_orders()
         
-    # transform the orders dict into a list of dicts
-    orders_list = [order for order in orders.values()]
-    return jsonify(orders_list), 200
+    return jsonify(orders), 200
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
