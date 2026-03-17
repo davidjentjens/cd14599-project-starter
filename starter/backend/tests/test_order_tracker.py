@@ -102,6 +102,11 @@ def test_get_order_by_id_raises_error_if_not_found(order_tracker):
     with pytest.raises(ValueError, match="Order with ID 'ORD001' not found."):
         order_tracker.get_order_by_id("ORD001")
 
+def test_get_order_by_id_raises_error_if_empty_id(order_tracker):
+    """Tests that getting an order with an empty ID raises a ValueError."""
+    with pytest.raises(ValueError, match="Invalid order ID."):
+        order_tracker.get_order_by_id("")
+
 # Update order status tests
 
 def test_update_order_status_successfully(order_tracker, mock_storage):
