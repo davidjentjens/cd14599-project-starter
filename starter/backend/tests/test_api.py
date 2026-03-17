@@ -34,6 +34,11 @@ def test_get_order_api_not_found(client):
     response = client.get('/api/orders/NONEXISTENT')
     assert response.status_code == 404
 
+def test_get_order_api_empty_id(client):
+    response = client.get('/api/orders/%20')
+    assert response.status_code in (400, 404)
+    assert "error" in response.json
+
 def test_update_order_status_api_success(client):
     client.post('/api/orders', json={
         "order_id": "UPDATE001", "item_name": "Test Item", "quantity": 1, "customer_id": "C1"
